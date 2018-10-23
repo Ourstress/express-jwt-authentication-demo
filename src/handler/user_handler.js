@@ -23,9 +23,16 @@ async function login(req, res) {
     });
   }
 
+  // send token via res.cookie()
   const token = user.generateJWT();
+  // TODO: we should also set "secure" option to true in the cookie, if our service supports HTTPS
+  res.cookie("jwt", token, {
+    httpOnly: true,
+    sameSite: true
+  });
+
   return res.json({
-    user: { username: user.username, email: user.email, token: token }
+    user: { username: user.username, email: user.email }
   });
 }
 

@@ -7,6 +7,7 @@ const express = require("express"),
   status = require("http-status"),
   morgan = require("morgan"),
   logger = require("./logger");
+const cookieParser = require("cookie-parser");
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -17,6 +18,7 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 if (process.env.NODE_ENV === "development") {
   app.use(errorhandler());
 }

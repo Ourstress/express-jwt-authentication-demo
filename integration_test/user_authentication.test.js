@@ -20,11 +20,13 @@ describe("User authentication", () => {
       .send({ user: { email, password } });
 
     let userJson = response.body.user;
-    expect(response.statusCode).toBe(status.OK);
+    expect(response.statusCode).toBe(200);
     expect(userJson).toBeDefined();
     expect(userJson.email).toEqual(email);
-    expect(userJson.token).toBeDefined();
-    expect(userJson.token).not.toBeNull();
+    const jwtTokenCookie = [expect.stringMatching(/jwt/)];
+    expect(response.headers["set-cookie"]).toEqual(
+      expect.arrayContaining(jwtTokenCookie)
+    );
   });
   test("Login with invalid email", async () => {
     let email = "bogus@example.com";
