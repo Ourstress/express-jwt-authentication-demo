@@ -155,3 +155,22 @@ describe("Setting and validation of password field on User model", () => {
     expect(user.validPassword(password)).toBeTruthy();
   });
 });
+
+describe("JWT tokens", () => {
+  const username = "jeff";
+  const email = "jeff@example.com";
+
+  let user = new User({ username, email });
+
+  beforeEach(async () => {
+    await user.save();
+  });
+  test("JWT tokens can be generated and verified", () => {
+    const token = user.generateJWT();
+    expect(user.verifyJWT(token)).toBeTruthy();
+  });
+
+  test("invalid JWT tokens cannot be verified", () => {
+    expect(user.verifyJWT("invalid token")).toBeFalsy();
+  });
+});

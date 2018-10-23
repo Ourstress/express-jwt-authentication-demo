@@ -3,6 +3,8 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
+const { secret } = require("../../config/jwt");
 
 const UserSchema = new mongoose.Schema({
   username: {
@@ -40,6 +42,30 @@ function hashPassword(password, salt) {
 
 UserSchema.methods.validPassword = function(password) {
   return this.passwordHash === hashPassword(password, this.passwordSalt);
+};
+
+UserSchema.methods.generateJWT = function() {
+  const today = new Date();
+  const exp = new Date(today);
+  exp.setDate(today.getDate() + 60);
+
+  return jwt.sign(
+    {
+      userid: this._id,
+      username: this.username,
+      exp: parseInt(exp.getTime() / 1000)
+    },
+    secret
+  );
+};
+
+UserSchema.methods.verifyJWT = function(token) {
+  try {
+    jwt.verify(token, secret);
+    return true;
+  } catch (err) {
+    return false;
+  }
 };
 
 UserSchema.plugin(uniqueValidator, { message: "should be unique" });
